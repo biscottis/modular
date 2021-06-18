@@ -30,12 +30,12 @@ abstract class WidgetModule extends StatelessWidget implements ChildModule {
   }
 
   @override
-  T getBind<T>(Map<String, dynamic> params, {List<Type> typesInRequest}) {
+  T? getBind<T>(Map<String, dynamic>? params, {List<Type>? typesInRequest}) {
     return _fakeModule.getBind<T>(params, typesInRequest: typesInRequest);
   }
 
   @override
-  List<String> get paths => [runtimeType.toString()];
+  List<String?> get paths => [runtimeType.toString()];
 
   @override
   bool remove<T>() {
@@ -48,7 +48,7 @@ abstract class WidgetModule extends StatelessWidget implements ChildModule {
   }
 
   @override
-  List<ModularRouter> get routers => null;
+  List<ModularRouter>? get routers => null;
 
   @override
   Widget build(BuildContext context) {
@@ -60,24 +60,24 @@ abstract class WidgetModule extends StatelessWidget implements ChildModule {
 }
 
 class _FakeModule extends ChildModule {
-  final List<Bind> bindsInject;
+  final List<Bind>? bindsInject;
 
-  _FakeModule({String path, this.bindsInject}) {
+  _FakeModule({this.bindsInject}) {
     paths.add(runtimeType.toString());
   }
 
   @override
-  List<Bind> get binds => bindsInject;
+  List<Bind>? get binds => bindsInject;
 
   @override
-  List<ModularRouter> get routers => null;
+  List<ModularRouter>? get routers => null;
 }
 
 class ModularProvider extends StatefulWidget {
-  final ChildModule module;
-  final Widget child;
+  final ChildModule? module;
+  final Widget? child;
 
-  const ModularProvider({Key key, this.module, this.child}) : super(key: key);
+  const ModularProvider({Key? key, this.module, this.child}) : super(key: key);
 
   @override
   _ModularProviderState createState() => _ModularProviderState();
@@ -87,13 +87,13 @@ class _ModularProviderState extends State<ModularProvider> {
   @override
   void initState() {
     super.initState();
-    Modular.addCoreInit(widget.module);
+    Modular.addCoreInit(widget.module!);
     _debugPrintModular("-- ${widget.module.runtimeType} INITIALIZED");
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return widget.child!;
   }
 
   @override

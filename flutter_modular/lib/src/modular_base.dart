@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -17,9 +18,9 @@ _debugPrintModular(String text) {
 
 class ModularNavigatorObserver extends NavigatorObserver {
   @override
-  void didPop(Route route, Route previousRoute) {
+  void didPop(Route route, Route? previousRoute) {
     Modular._navigators.forEach((key, value) {
-      if (value.currentState != null && key != null) {}
+      if (value.currentState != null) {}
     });
     super.didPop(route, previousRoute);
   }
@@ -30,26 +31,24 @@ class Modular {
   static bool debugMode = !kReleaseMode;
   static bool isCupertino = false;
   static final Map<String, ChildModule> _injectMap = {};
-  static ChildModule _initialModule;
-  static ModularArguments _args;
-  static RouteLink _routeLink;
+  static ChildModule? _initialModule;
+  static ModularArguments? _args;
+  static RouteLink? _routeLink;
   static Old _old = Old();
   static Old get old => _old;
-  static ModularArguments get args => _args?.copy();
-  static IModularNavigator navigatorDelegate;
+  static ModularArguments? get args => _args?.copy();
+  static IModularNavigator? navigatorDelegate;
   static List<String> currentModule = <String>[];
-  static Map<String, GlobalKey<NavigatorState>> _navigators =
-      <String, GlobalKey<NavigatorState>>{};
+  static final Map<String, GlobalKey<NavigatorState>> _navigators = <String, GlobalKey<NavigatorState>>{};
 
   /// Return RouteLink of the current module
   ///
   /// ```
   /// Modular.link;
   /// ```
-  static IModularNavigator get link {
+  static IModularNavigator? get link {
     if (navigatorDelegate == null) {
-      assert(_navigators.containsKey('app') == true,
-          '''Add Modular.navigatorKey in your MaterialApp;
+      assert(_navigators.containsKey('app') == true, '''Add Modular.navigatorKey in your MaterialApp;
 
       return MaterialApp(
         navigatorKey: Modular.navigatorKey,
@@ -65,11 +64,11 @@ class Modular {
   /// Used for inside RouterOutlet
 
   static IModularNavigator get navigator {
-    return ModularNavigator(_navigators[currentModule.last].currentState);
+    return ModularNavigator(_navigators[currentModule.last]!.currentState);
   }
 
   /// Add Navigator key for RouterOutlet
-  static GlobalKey<NavigatorState> outletNavigatorKey(String path) {
+  static GlobalKey<NavigatorState>? outletNavigatorKey(String path) {
     if (!_navigators.containsKey(path)) {
       _navigators.addAll({path: GlobalKey<NavigatorState>()});
     }
@@ -106,8 +105,7 @@ class Modular {
   /// ```
   static IModularNavigator get to {
     if (navigatorDelegate == null) {
-      assert(_navigators.containsKey('app') == true,
-          '''Add Modular.navigatorKey in your MaterialApp;
+      assert(_navigators.containsKey('app') == true, '''Add Modular.navigatorKey in your MaterialApp;
 
       return MaterialApp(
         navigatorKey: Modular.navigatorKey,
@@ -116,16 +114,15 @@ class Modular {
 
       ''');
     }
-    return navigatorDelegate ??
-        ModularNavigator(_navigators['app'].currentState);
+    return navigatorDelegate ?? ModularNavigator(_navigators['app']!.currentState);
   }
 
   @visibleForTesting
-  static void arguments({Map<String, dynamic> params, dynamic data}) {
+  static void arguments({Map<String, dynamic>? params, dynamic data}) {
     _args = ModularArguments(params ?? {}, data);
   }
 
-  static GlobalKey<NavigatorState> get navigatorKey {
+  static GlobalKey<NavigatorState>? get navigatorKey {
     if (!_navigators.containsKey('app')) {
       _navigators.addAll({'app': GlobalKey<NavigatorState>()});
       if (!currentModule.contains("app")) {
@@ -141,8 +138,7 @@ class Modular {
   }
 
   @visibleForTesting
-  static void bindModule(ChildModule module, [String path]) {
-    assert(module != null);
+  static void bindModule(ChildModule module, [String? path]) {
     final name = module.runtimeType.toString();
     if (!_injectMap.containsKey(name)) {
       module.paths.add(path);
@@ -150,14 +146,14 @@ class Modular {
       module.instance();
       _debugPrintModular("-- ${module.runtimeType.toString()} INITIALIZED");
     } else {
-      _injectMap[name].paths.add(path);
+      _injectMap[name]!.paths.add(path);
     }
   }
 
-  static void removeModule(ChildModule module, [String name]) {
+  static void removeModule(ChildModule? module, [String? name]) {
     name ??= module.runtimeType.toString();
     if (_injectMap.containsKey(name)) {
-      _injectMap[name].cleanInjects();
+      _injectMap[name]!.cleanInjects();
       _injectMap.remove(name);
       if (_navigators.containsKey(name)) {
         _navigators.remove(name);
@@ -166,11 +162,7 @@ class Modular {
     }
   }
 
-  static B get<B>(
-      {Map<String, dynamic> params,
-      String module,
-      List<Type> typesInRequest,
-      B defaultValue}) {
+  static B? get<B>({Map<String, dynamic>? params, String? module, List<Type>? typesInRequest, B? defaultValue}) {
     if (B.toString() == 'dynamic') {
       throw ModularError('not allow for dynamic values');
     }
@@ -178,16 +170,12 @@ class Modular {
     typesInRequest ??= [];
 
     if (module != null) {
-      return _getInjectableObject<B>(module,
-          params: params, typesInRequest: typesInRequest);
+      return _getInjectableObject<B>(module, params: params, typesInRequest: typesInRequest);
     }
 
     for (var key in _injectMap.keys) {
       final value = _getInjectableObject<B>(key,
-          params: params,
-          disableError: true,
-          typesInRequest: typesInRequest,
-          checkKey: false);
+          params: params, disableError: true, typesInRequest: typesInRequest, checkKey: false);
       if (value != null) {
         return value;
       }
@@ -200,18 +188,13 @@ class Modular {
     throw ModularError('${B.toString()} not found');
   }
 
-  static B _getInjectableObject<B>(String tag,
-      {Map<String, dynamic> params,
-      bool disableError = false,
-      List<Type> typesInRequest,
-      bool checkKey = true}) {
-    B value;
+  static B? _getInjectableObject<B>(String tag,
+      {Map<String, dynamic>? params, bool disableError = false, List<Type>? typesInRequest, bool checkKey = true}) {
+    B? value;
     if (!checkKey) {
-      value =
-          _injectMap[tag].getBind<B>(params, typesInRequest: typesInRequest);
+      value = _injectMap[tag]!.getBind<B>(params, typesInRequest: typesInRequest);
     } else if (_injectMap.containsKey(tag)) {
-      value =
-          _injectMap[tag].getBind<B>(params, typesInRequest: typesInRequest);
+      value = _injectMap[tag]!.getBind<B>(params, typesInRequest: typesInRequest);
     }
     if (value == null && !disableError) {
       throw ModularError('${B.toString()} not found in module $tag');
@@ -220,7 +203,7 @@ class Modular {
     return value;
   }
 
-  static void dispose<B>([String module]) {
+  static void dispose<B>([String? module]) {
     if (B.toString() == 'dynamic') {
       throw ModularError('not allow for dynamic values');
     }
@@ -237,7 +220,7 @@ class Modular {
   }
 
   static bool _removeInjectableObject<B>(String tag) {
-    return _injectMap[tag].remove<B>();
+    return _injectMap[tag]!.remove<B>();
   }
 
   @visibleForTesting
@@ -267,8 +250,7 @@ class Modular {
   }
 
   @visibleForTesting
-  static bool searchRoute(
-      ModularRouter router, String routeNamed, String path) {
+  static bool searchRoute(ModularRouter router, String routeNamed, String path) {
     if (routeNamed.split('/').length != path.split('/').length) {
       return false;
     }
@@ -292,8 +274,7 @@ class Modular {
             var paramName = routePart.replaceFirst(':', '');
             if (pathParts[paramPos].isNotEmpty) {
               params[paramName] = pathParts[paramPos];
-              routeNamed =
-                  routeNamed.replaceFirst(routePart, params[paramName]);
+              routeNamed = routeNamed.replaceFirst(routePart, params[paramName]!);
             }
           }
           paramPos++;
@@ -317,17 +298,12 @@ class Modular {
     return routeNamed == path;
   }
 
-  static RouteGuard _verifyGuard(List<RouteGuard> guards, String path) {
-    RouteGuard guard;
+  static RouteGuard? _verifyGuard(List<RouteGuard>? guards, String path) {
+    RouteGuard? guard;
     var realGuards = guards ?? [];
-    guard = realGuards.length == 0
-        ? null
-        : guards.firstWhere((guard) => !guard.canActivate(path),
-            orElse: () => null);
+    guard = realGuards.isEmpty ? null : guards!.firstWhereOrNull((guard) => !guard.canActivate(path));
 
-    realGuards
-        .expand((c) => c.executors)
-        .forEach((c) => c.onGuarded(path, isActive: guard == null));
+    realGuards.expand((c) => c.executors).forEach((c) => c.onGuarded(path, isActive: guard == null));
 
     if (guard != null) {
       throw ModularError("Path guarded : $path");
@@ -335,42 +311,36 @@ class Modular {
     return guard;
   }
 
-  static List<RouteGuard> _masterRouteGuards;
+  static List<RouteGuard>? _masterRouteGuards;
 
-  static ModularRouter _searchInModule(
-      ChildModule module, String routerName, String path) {
+  static ModularRouter? _searchInModule(ChildModule module, String routerName, String path) {
     path = "/$path".replaceAll('//', '/');
-    final routers = module.routers;
+    final routers = module.routers!;
     routers.sort((preview, actual) {
-      return preview.routerName.contains('/:') ? 1 : 0;
+      return preview.routerName!.contains('/:') ? 1 : 0;
     });
     for (var route in routers) {
-      final tempRouteName =
-          (routerName + route.routerName).replaceFirst('//', '/');
+      final tempRouteName = (routerName + route.routerName!).replaceFirst('//', '/');
       if (route.child == null) {
         _masterRouteGuards = route.guards;
-        var _routerName =
-            ('$routerName${route.routerName}/').replaceFirst('//', '/');
-        ModularRouter router;
+        var _routerName = ('$routerName${route.routerName}/').replaceFirst('//', '/');
+        ModularRouter? router;
         if (_routerName == path || _routerName == "$path/") {
           final guard = _verifyGuard(route.guards, path);
           if (guard != null) {
             return null;
           }
-          router = route.module.routers[0];
+          router = route.module!.routers![0];
           if (router.module != null) {
-            var _routerName =
-                (routerName + route.routerName).replaceFirst('//', '/');
-            router = _searchInModule(route.module, _routerName, path);
+            var _routerName = (routerName + route.routerName!).replaceFirst('//', '/');
+            router = _searchInModule(route.module!, _routerName, path);
           }
         } else {
-          router = _searchInModule(route.module, _routerName, path);
+          router = _searchInModule(route.module!, _routerName, path);
         }
 
         if (router != null) {
-          router = router.modulePath == null
-              ? router.copyWith(modulePath: tempRouteName)
-              : router;
+          router = router.modulePath == null ? router.copyWith(modulePath: tempRouteName) : router;
           if (_routerName == path || _routerName == "$path/") {
             final guard = _verifyGuard(router.guards, path);
             if (guard != null) {
@@ -384,7 +354,7 @@ class Modular {
               customTransition: route.customTransition,
             );
           }
-          bindModule(route.module, path);
+          bindModule(route.module!, path);
           return router;
         }
       } else {
@@ -392,8 +362,7 @@ class Modular {
           var guards = _prepareGuardList(_masterRouteGuards, route.guards);
           _masterRouteGuards = null;
           var guard = _verifyGuard(guards, path);
-          if ((tempRouteName == path || tempRouteName == "$path/") &&
-              path != '/') {
+          if ((tempRouteName == path || tempRouteName == "$path/") && path != '/') {
             guard = _verifyGuard(guards, path);
           }
           return guard == null ? route : null;
@@ -403,8 +372,7 @@ class Modular {
     return null;
   }
 
-  static List<RouteGuard> _prepareGuardList(
-      List<RouteGuard> moduleGuard, List<RouteGuard> routeGuard) {
+  static List<RouteGuard> _prepareGuardList(List<RouteGuard>? moduleGuard, List<RouteGuard>? routeGuard) {
     if (moduleGuard == null) {
       moduleGuard = [];
     }
@@ -416,23 +384,22 @@ class Modular {
   }
 
   @visibleForTesting
-  static ModularRouter selectRoute(String path, [ChildModule module]) {
+  static ModularRouter? selectRoute(String path, [ChildModule? module]) {
     if (path.isEmpty) {
       throw Exception("Router can not be empty");
     }
-    final route = _searchInModule(module ?? _initialModule, "", path);
+    final route = _searchInModule(module ?? _initialModule!, "", path);
     return route;
   }
 
   static void oldProccess(Old $old) {
-    if ($old?.args != null) _args = $old?.args?.copy();
-    if ($old?.link != null) _routeLink = $old?.link?.copy();
+    if ($old.args != null) _args = $old.args?.copy();
+    if ($old.link != null) _routeLink = $old.link?.copy();
   }
 
-  static Route<T> generateRoute<T>(RouteSettings settings,
-      [ChildModule module]) {
+  static Route<T>? generateRoute<T>(RouteSettings settings, [ChildModule? module]) {
     final isRouterOutlet = module != null;
-    final path = settings.name;
+    final path = settings.name!;
     var router = selectRoute(path, module);
     if (router == null) {
       return null;
@@ -440,7 +407,7 @@ class Modular {
     if (!isRouterOutlet) {
       _old = Old(
         args: args,
-        link: link,
+        link: link as RouteLink?,
       );
       updateCurrentModule("app");
     }
@@ -453,10 +420,7 @@ class Modular {
       router = router.copyWith(transition: TransitionType.noTransition);
     }
 
-    return router.getPageRoute(
-        settings: settings,
-        injectMap: _injectMap,
-        isRouterOutlet: isRouterOutlet);
+    return router.getPageRoute(settings: settings, injectMap: _injectMap, isRouterOutlet: isRouterOutlet) as Route<T>?;
   }
 
   static void addCoreInit(ChildModule module) {
@@ -471,7 +435,7 @@ class Modular {
 }
 
 class ModularArguments {
-  final Map<String, dynamic> params;
+  final Map<String, dynamic>? params;
   final dynamic data;
 
   ModularArguments(this.params, this.data);

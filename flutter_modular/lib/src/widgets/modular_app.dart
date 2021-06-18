@@ -3,11 +3,11 @@ import '../../flutter_modular.dart';
 import '../interfaces/main_module.dart';
 
 class ModularApp extends StatefulWidget {
-  final MainModule module;
+  final MainModule? module;
   final bool isCupertino;
 
   ModularApp({
-    Key key,
+    Key? key,
     this.module,
     this.isCupertino = false,
   }) : super(key: key) {
@@ -22,12 +22,12 @@ class _ModularAppState extends State<ModularApp> {
   @override
   void initState() {
     super.initState();
-    Modular.init(widget.module);
+    Modular.init(widget.module!);
   }
 
   @override
   void dispose() {
-    widget.module.cleanInjects();
+    widget.module!.cleanInjects();
     if (Modular.debugMode) {
       debugPrint("-- ${widget.module.runtimeType.toString()} DISPOSED");
     }
@@ -36,6 +36,6 @@ class _ModularAppState extends State<ModularApp> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.module.bootstrap;
+    return widget.module!.bootstrap;
   }
 }

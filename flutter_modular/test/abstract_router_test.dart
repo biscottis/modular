@@ -23,15 +23,15 @@ main() {
 
   group("Dynamic router", () {
     test('Test Get ModularRouter', () {
-      var router = Modular.selectRoute("/");
+      var router = Modular.selectRoute("/")!;
       expect(router.routerName, "/");
     });
     test('Test Get ModularRouter dynamic', () {
-      var router = Modular.selectRoute("/1");
+      var router = Modular.selectRoute("/1")!;
       expect(router.routerName, "/:id");
     });
     test('Test Get ModularRouter home', () {
-      var router = Modular.selectRoute("/home");
+      var router = Modular.selectRoute("/home")!;
       expect(router.routerName, "/home");
     });
 
@@ -39,7 +39,7 @@ main() {
       expect(Modular.selectRoute("/product")?.routerName, "/product");
     });
     test('Test Get ModularRouter product id', () {
-      var router = Modular.selectRoute("/product/1");
+      var router = Modular.selectRoute("/product/1")!;
       expect(router.routerName, "/product/:id");
     });
   });

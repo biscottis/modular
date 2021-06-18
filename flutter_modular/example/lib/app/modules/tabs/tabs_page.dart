@@ -1,4 +1,3 @@
-import 'package:example/app/modules/tabs/tabs_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
@@ -45,16 +44,12 @@ class _TabsPageState extends State<TabsPage> {
           onPressed: () {
             Modular.to.pushNamed("/shopping");
           }),
-      body: RouterOutletList(
-          modules: [Tab1Module(), Tab2Module()], controller: controller),
-      bottomNavigationBar: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: controller.changeModule,
-          items: [
-            BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('data')),
-            BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('data')),
-            BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('data')),
-          ]),
+      body: RouterOutletList(modules: [Tab1Module(), Tab2Module()], controller: controller),
+      bottomNavigationBar: BottomNavigationBar(currentIndex: currentIndex, onTap: controller.changeModule, items: [
+        BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('data')),
+        BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('data')),
+        BottomNavigationBarItem(icon: Icon(Icons.add), title: Text('data')),
+      ]),
     );
   }
 }

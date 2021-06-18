@@ -32,17 +32,15 @@ class HomeModule extends ChildModule {
         ),
         ModularRouter("/list/:id/:id2", child: (_, args) => HomeWidget()),
         ModularRouter("/product", module: ProductModule()),
-        ModularRouter("/arguments",
-            child: (_, args) => ArgumentsPage(id: args.data)),
-        ModularRouter("/modularArguments",
-            child: (_, args) => ModularArgumentsPage()),
+        ModularRouter("/arguments", child: (_, args) => ArgumentsPage(id: args?.data)),
+        ModularRouter("/modularArguments", child: (_, args) => ModularArgumentsPage()),
       ];
 }
 
 class ArgumentsPage extends StatelessWidget {
-  final int id;
+  final int? id;
 
-  const ArgumentsPage({Key key, @required this.id}) : super(key: key);
+  const ArgumentsPage({Key? key, required this.id}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -59,12 +57,12 @@ class ModularArgumentsPage extends StatefulWidget {
 }
 
 class _ModularArgumentsPageState extends State<ModularArgumentsPage> {
-  int _id;
+  int? _id;
 
   @override
   void initState() {
     super.initState();
-    _id = Modular.args.data;
+    _id = Modular.args!.data;
   }
 
   @override

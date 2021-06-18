@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../../flutter_modular.dart';
 import '../interfaces/child_module.dart';
 import '../interfaces/route_guard.dart';
 import '../transitions/transitions.dart';
 import '../utils/old.dart';
 
-typedef RouteBuilder<T> = MaterialPageRoute<T> Function(
-    WidgetBuilder, RouteSettings);
+typedef RouteBuilder<T> = MaterialPageRoute<T> Function(WidgetBuilder, RouteSettings);
 
 _debugPrintModular(String text) {
   if (Modular.debugMode) {
@@ -25,7 +25,7 @@ class ModularRouter<T> {
   ///
   /// For more example go to Modular page from gitHub [https://github.com/Flutterando/modular]
   ///
-  final String routerName;
+  final String? routerName;
 
   ///
   /// Paramenter name: [child]
@@ -37,7 +37,7 @@ class ModularRouter<T> {
   /// For more example go to Modular page from gitHub [https://github.com/Flutterando/modular]
   ///
 
-  final Widget Function(BuildContext context, ModularArguments args) child;
+  final Widget Function(BuildContext context, ModularArguments? args)? child;
 
   ///
   /// Paramenter name: [module]
@@ -48,7 +48,7 @@ class ModularRouter<T> {
   ///
   /// For more example go to Modular page from gitHub [https://github.com/Flutterando/modular]
   ///
-  final ChildModule module;
+  final ChildModule? module;
 
   ///
   /// Paramenter name: [params]
@@ -59,7 +59,7 @@ class ModularRouter<T> {
   ///
   /// For more example go to Modular page from gitHub [https://github.com/Flutterando/modular]
   ///
-  Map<String, String> params;
+  Map<String, String>? params;
 
   ///
   /// Paramenter name: [guards]
@@ -101,7 +101,7 @@ class ModularRouter<T> {
   /// For more example go to Modular page from gitHub [https://github.com/Flutterando/modular]
   ///
 
-  final List<RouteGuard> guards;
+  final List<RouteGuard>? guards;
 
   ///
   /// Paramenter name: [transition]
@@ -110,7 +110,7 @@ class ModularRouter<T> {
   ///
   /// For more example go to Modular page from gitHub [https://github.com/Flutterando/modular]
   ///
-  final TransitionType transition;
+  final TransitionType? transition;
 
   ///
   /// Paramenter name: [customTransiton]
@@ -161,7 +161,7 @@ class ModularRouter<T> {
   /// ```
   /// For more example go to Modular page from gitHub [https://github.com/Flutterando/modular]
   ///
-  final CustomTransition customTransition;
+  final CustomTransition? customTransition;
 
   ///
   /// Paramenter name: [transition]
@@ -170,8 +170,8 @@ class ModularRouter<T> {
   ///
   /// For more example go to Modular page from gitHub [https://github.com/Flutterando/modular]
   ///
-  final RouteBuilder<T> routeGenerator;
-  final String modulePath;
+  final RouteBuilder<T>? routeGenerator;
+  final String? modulePath;
   final Duration duration;
 
   ModularRouter(
@@ -190,8 +190,7 @@ class ModularRouter<T> {
 
     if (transition == null) throw ArgumentError('transition must not be null');
     if (transition == TransitionType.custom && customTransition == null) {
-      throw ArgumentError(
-          '[customTransition] required for transition type [TransitionType.custom]');
+      throw ArgumentError('[customTransition] required for transition type [TransitionType.custom]');
     }
     if (module == null && child == null) {
       throw ArgumentError('[module] or [child] must be provided');
@@ -203,10 +202,10 @@ class ModularRouter<T> {
   final Map<
       TransitionType,
       PageRouteBuilder<T> Function(
-    Widget Function(BuildContext, ModularArguments) builder,
-    ModularArguments args,
+    Widget Function(BuildContext, ModularArguments?) builder,
+    ModularArguments? args,
     Duration transitionDuration,
-    RouteSettings settings,
+    RouteSettings? settings,
   )> _transitions = {
     TransitionType.fadeIn: fadeInTransition,
     TransitionType.noTransition: noTransition,
@@ -222,16 +221,16 @@ class ModularRouter<T> {
   };
 
   ModularRouter<T> copyWith(
-      {Widget Function(BuildContext context, ModularArguments args) child,
-      String routerName,
-      ChildModule module,
-      Map<String, String> params,
-      List<RouteGuard> guards,
-      TransitionType transition,
-      RouteBuilder routeGenerator,
-      String modulePath,
-      String duration,
-      CustomTransition customTransition}) {
+      {Widget Function(BuildContext context, ModularArguments? args)? child,
+      String? routerName,
+      ChildModule? module,
+      Map<String, String>? params,
+      List<RouteGuard>? guards,
+      TransitionType? transition,
+      RouteBuilder? routeGenerator,
+      String? modulePath,
+      String? duration,
+      CustomTransition? customTransition}) {
     return ModularRouter<T>(
       routerName ?? this.routerName,
       child: child ?? this.child,
@@ -239,18 +238,19 @@ class ModularRouter<T> {
       params: params ?? this.params,
       modulePath: modulePath ?? this.modulePath,
       guards: guards ?? this.guards,
-      duration: duration ?? this.duration,
-      routeGenerator: routeGenerator ?? this.routeGenerator,
+      duration: duration as Duration? ?? this.duration,
+      routeGenerator: routeGenerator as MaterialPageRoute<T> Function(Widget Function(BuildContext), RouteSettings)? ??
+          this.routeGenerator,
       transition: transition ?? this.transition,
       customTransition: customTransition ?? this.customTransition,
     );
   }
 
   static List<ModularRouter> group({
-    @required List<ModularRouter> routes,
-    List<RouteGuard> guards,
-    TransitionType transition,
-    CustomTransition customTransition,
+    required List<ModularRouter> routes,
+    List<RouteGuard>? guards,
+    TransitionType? transition,
+    CustomTransition? customTransition,
   }) {
     return routes.map((r) {
       return r.copyWith(
@@ -262,24 +262,24 @@ class ModularRouter<T> {
   }
 
   Widget _disposableGenerate({
-    Map<String, ChildModule> injectMap,
-    bool isRouterOutlet,
-    String path,
+    Map<String, ChildModule>? injectMap,
+    bool? isRouterOutlet,
+    String? path,
   }) {
     Widget page = _DisposableWidget(
       child: child,
       dispose: (old, actual) {
         final trash = <String>[];
-        if (!isRouterOutlet) {
-          Modular.oldProccess(old);
+        if (!isRouterOutlet!) {
+          Modular.oldProccess(old!);
           Modular.updateCurrentModuleApp();
         }
-        if (actual.isCurrent) {
+        if (actual!.isCurrent) {
           return;
         }
-        injectMap.forEach((key, module) {
+        injectMap!.forEach((key, module) {
           module.paths.remove(path);
-          if (module.paths.length == 0) {
+          if (module.paths.isEmpty) {
             module.cleanInjects();
             trash.add(key);
             _debugPrintModular("-- ${module.runtimeType.toString()} DISPOSED");
@@ -294,14 +294,9 @@ class ModularRouter<T> {
     return page;
   }
 
-  Route<T> getPageRoute(
-      {Map<String, ChildModule> injectMap,
-      RouteSettings settings,
-      bool isRouterOutlet}) {
-    final disposablePage = _disposableGenerate(
-        injectMap: injectMap,
-        path: settings.name,
-        isRouterOutlet: isRouterOutlet);
+  Route<T> getPageRoute({Map<String, ChildModule>? injectMap, required RouteSettings settings, bool? isRouterOutlet}) {
+    final disposablePage =
+        _disposableGenerate(injectMap: injectMap, path: settings.name, isRouterOutlet: isRouterOutlet);
 
     if (transition == TransitionType.custom && customTransition != null) {
       return PageRouteBuilder(
@@ -309,8 +304,8 @@ class ModularRouter<T> {
           return disposablePage;
         },
         settings: settings,
-        transitionsBuilder: customTransition.transitionBuilder,
-        transitionDuration: customTransition.transitionDuration,
+        transitionsBuilder: customTransition!.transitionBuilder,
+        transitionDuration: customTransition!.transitionDuration,
       );
     } else if (transition == TransitionType.defaultTransition) {
       // Helper function
@@ -319,7 +314,7 @@ class ModularRouter<T> {
       }
 
       if (routeGenerator != null) {
-        return routeGenerator(widgetBuilder, settings);
+        return routeGenerator!(widgetBuilder, settings);
       }
       return Modular.isCupertino
           ? CupertinoPageRoute<T>(
@@ -331,7 +326,7 @@ class ModularRouter<T> {
               builder: widgetBuilder,
             );
     } else {
-      var selectTransition = _transitions[transition];
+      var selectTransition = _transitions[transition!]!;
       return selectTransition((context, args) {
         return disposablePage;
       }, Modular.args, duration, settings);
@@ -356,22 +351,18 @@ enum TransitionType {
 }
 
 class CustomTransition {
-  final Widget Function(
-          BuildContext, Animation<double>, Animation<double>, Widget)
-      transitionBuilder;
+  final Widget Function(BuildContext, Animation<double>, Animation<double>, Widget) transitionBuilder;
   final Duration transitionDuration;
 
-  CustomTransition(
-      {@required this.transitionBuilder,
-      this.transitionDuration = const Duration(milliseconds: 300)});
+  CustomTransition({required this.transitionBuilder, this.transitionDuration = const Duration(milliseconds: 300)});
 }
 
 class _DisposableWidget extends StatefulWidget {
-  final Function(Old old, ModalRoute actual) dispose;
-  final Widget Function(BuildContext context, ModularArguments args) child;
+  final Function(Old? old, ModalRoute? actual)? dispose;
+  final Widget Function(BuildContext context, ModularArguments? args)? child;
 
   _DisposableWidget({
-    Key key,
+    Key? key,
     this.dispose,
     this.child,
   }) : super(key: key);
@@ -381,9 +372,9 @@ class _DisposableWidget extends StatefulWidget {
 }
 
 class __DisposableWidgetState extends State<_DisposableWidget> {
-  Old old;
-  ModalRoute actual;
-  ModularArguments args;
+  Old? old;
+  ModalRoute? actual;
+  ModularArguments? args;
 
   @override
   void initState() {
@@ -400,12 +391,12 @@ class __DisposableWidgetState extends State<_DisposableWidget> {
 
   @override
   void dispose() {
-    widget.dispose(old, actual);
+    widget.dispose!(old, actual);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.child(context, args);
+    return widget.child!(context, args);
   }
 }

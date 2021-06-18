@@ -1,13 +1,13 @@
 import 'package:flutter/widgets.dart';
 import '../../flutter_modular.dart';
 
-class Consumer<T extends ChangeNotifier> extends StatefulWidget {
-  final Widget Function(BuildContext context, T value) builder;
-  final bool Function(T oldValue, T newValue) distinct;
+class Consumer<T extends ChangeNotifier?> extends StatefulWidget {
+  final Widget Function(BuildContext context, T value)? builder;
+  final bool Function(T oldValue, T newValue)? distinct;
 
   Consumer({
-    Key key,
-    @required this.builder,
+    Key? key,
+    required this.builder,
     this.distinct,
   }) : super(key: key);
 
@@ -15,12 +15,12 @@ class Consumer<T extends ChangeNotifier> extends StatefulWidget {
   _ConsumerState<T> createState() => _ConsumerState<T>();
 }
 
-class _ConsumerState<T extends ChangeNotifier> extends State<Consumer<T>> {
-  T value;
+class _ConsumerState<T extends ChangeNotifier?> extends State<Consumer<T?>> {
+  T? value;
 
   void listener() {
     final newValue = Modular.get<T>();
-    if (widget.distinct == null || widget.distinct(value, newValue)) {
+    if (widget.distinct == null || widget.distinct!(value, newValue)) {
       setState(() => value = newValue);
     }
   }
@@ -29,17 +29,17 @@ class _ConsumerState<T extends ChangeNotifier> extends State<Consumer<T>> {
   void initState() {
     super.initState();
     value = Modular.get<T>();
-    value.addListener(listener);
+    value!.addListener(listener);
   }
 
   @override
   void dispose() {
-    value.removeListener(listener);
+    value!.removeListener(listener);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(context, value);
+    return widget.builder!(context, value);
   }
 }

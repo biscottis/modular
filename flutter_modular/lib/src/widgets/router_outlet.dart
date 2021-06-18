@@ -6,12 +6,12 @@ import 'widget_module.dart';
 class RouterOutlet extends StatefulWidget {
   final ChildModule module;
   final String initialRoute;
-  final Key navigatorKey;
+  final Key? navigatorKey;
   final bool keepAlive;
 
   RouterOutlet(
-      {Key key,
-      @required this.module,
+      {Key? key,
+      required this.module,
       this.navigatorKey,
       this.initialRoute = Modular.initialRoute,
       this.keepAlive = true})
@@ -25,11 +25,11 @@ class RouterOutlet extends StatefulWidget {
 
 class _RouterOutletState extends State<RouterOutlet>
     with AutomaticKeepAliveClientMixin {
-  GlobalKey<NavigatorState> _key;
+  GlobalKey<NavigatorState>? _key;
   @override
   void initState() {
     super.initState();
-    _key = widget.navigatorKey ??
+    _key = widget.navigatorKey as GlobalKey<NavigatorState>? ??
         Modular.outletNavigatorKey(widget.module.runtimeType.toString());
   }
 
@@ -38,7 +38,7 @@ class _RouterOutletState extends State<RouterOutlet>
     super.build(context);
     return WillPopScope(
       onWillPop: () async {
-        return !await _key.currentState.maybePop();
+        return !await _key!.currentState!.maybePop();
       },
       child: ModularProvider(
         module: widget.module,

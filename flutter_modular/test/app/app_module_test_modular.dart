@@ -22,5 +22,5 @@ class InitAppModuleHelper extends IModularTest {
   ChildModule get module => AppModule();
 
   @override
-  IModularTest get modulardependency => null;
+  IModularTest? get modulardependency => null;
 }

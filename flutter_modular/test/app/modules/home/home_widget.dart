@@ -7,7 +7,7 @@ class HomeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text(Modular.get<HomeBloc>().testingText),
+      child: Text(Modular.get<HomeBloc>()!.testingText),
     );
   }
 }

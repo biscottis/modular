@@ -35,7 +35,7 @@ void main() {
     testWidgets('on pushNamed modify actualRoute ', (tester) async {
       await tester.pumpWidget(buildTestableWidget(HomeWidget()));
       Modular.to.pushNamed('/prod');
-      expect(Modular.link.path, '/prod');
+      expect(Modular.link!.path, '/prod');
     });
     tearDown(() {
       Modular.removeModule(product);

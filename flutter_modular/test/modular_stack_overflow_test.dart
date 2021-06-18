@@ -34,13 +34,13 @@ class ModuleStackOverflowMock extends ChildModule {
 }
 
 class ObjectController {
-  final ObjectRepository repo;
+  final ObjectRepository? repo;
 
   ObjectController(this.repo);
 }
 
 class ObjectRepository {
-  final ObjectController controller;
+  final ObjectController? controller;
 
   ObjectRepository(this.controller);
 }
@@ -60,7 +60,7 @@ class ModuleStackOverflowMockNotError extends ChildModule {
 }
 
 class HomeController {
-  final ObjectRepository03 repo;
+  final ObjectRepository03? repo;
 
   HomeController(this.repo);
 }
@@ -68,14 +68,14 @@ class HomeController {
 class ObjectRepository01 {}
 
 class ObjectRepository02 {
-  final ObjectRepository01 controller;
+  final ObjectRepository01? controller;
 
   ObjectRepository02(this.controller);
 }
 
 class ObjectRepository03 {
-  final ObjectRepository01 controller1;
-  final ObjectRepository02 controller2;
+  final ObjectRepository01? controller1;
+  final ObjectRepository02? controller2;
 
   ObjectRepository03(this.controller1, this.controller2);
 }

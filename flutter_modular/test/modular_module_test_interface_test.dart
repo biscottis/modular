@@ -32,7 +32,7 @@ void main() {
     });
   });
   group("IModuleTest", () {
-    ILocalStorage localStorageBeforeReload;
+    ILocalStorage? localStorageBeforeReload;
     setUp(() {
       InitAppModuleHelper().load();
       Modular.get<ILocalStorage>();

@@ -17,9 +17,9 @@ class ProductModule extends ChildModule {
 }
 
 class DetailsPage extends StatelessWidget {
-  final int id;
+  final int? id;
 
-  const DetailsPage({Key key, this.id}) : super(key: key);
+  const DetailsPage({Key? key, this.id}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container();

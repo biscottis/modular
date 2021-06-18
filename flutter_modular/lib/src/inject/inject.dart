@@ -8,19 +8,19 @@ class Inject<T> {
   ///Bind has access to the arguments coming from the routes.
   ///If you need specific access, do it through functions.
   @deprecated
-  Map<String, dynamic> params = {};
-  final String tag;
-  final List<Type> typesInRequest;
+  Map<String, dynamic>? params = {};
+  final String? tag;
+  final List<Type>? typesInRequest;
 
   Inject({this.params, this.tag, this.typesInRequest});
 
   factory Inject.of() => Inject(tag: T.toString());
 
-  B call<B>({Map<String, dynamic> params, B defaultValue}) =>
+  B? call<B>({Map<String, dynamic>? params, B? defaultValue}) =>
       get<B>(params: params, defaultValue: defaultValue);
 
   /// get injected dependency
-  B get<B>({Map<String, dynamic> params, B defaultValue}) {
+  B? get<B>({Map<String, dynamic>? params, B? defaultValue}) {
     params ??= {};
     if (tag == null) {
       return Modular.get<B>(
@@ -38,10 +38,10 @@ class Inject<T> {
     }
   }
 
-  ModularArguments get args => Modular.args;
+  ModularArguments? get args => Modular.args;
 
   /// get current module link
-  RouteLink get link => Modular.link;
+  RouteLink? get link => Modular.link as RouteLink?;
 
   void dispose<B>() {
     if (T.runtimeType.toString() == 'dynamic') {
@@ -55,7 +55,7 @@ class Inject<T> {
 mixin InjectMixinBase<T> {
   final Inject<T> _inject = Inject<T>.of();
 
-  S get<S>() => _inject.get<S>();
+  S? get<S>() => _inject.get<S>();
 }
 
 /// A mixin that must be used only with classes that extends a [Widget]
@@ -64,12 +64,12 @@ mixin InjectWidgetMixin<T extends ChildModule> on Widget
     implements InjectMixinBase<T> {
   final Inject<T> _inject = Inject<T>.of();
 
-  S get<S>({Map<String, dynamic> params}) =>
+  S? get<S>({Map<String, dynamic>? params}) =>
       Modular.get<S>(module: T.toString(), params: params);
 
   Widget consumer<S extends ChangeNotifier>({
-    Widget Function(BuildContext context, S value) builder,
-    bool Function(S oldValue, S newValue) distinct,
+    Widget Function(BuildContext context, S value)? builder,
+    bool Function(S oldValue, S newValue)? distinct,
   }) {
     return Consumer(
       builder: builder,

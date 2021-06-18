@@ -1,12 +1,13 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/widgets.dart';
 
 import '../../flutter_modular.dart';
 import '../routers/modular_router.dart';
 
 abstract class ChildModule {
-  List<Bind> _binds;
-  List<Bind> get binds;
-  List<ModularRouter> get routers;
+  List<Bind>? _binds;
+  List<Bind>? get binds;
+  List<ModularRouter>? get routers;
 
   ChildModule() {
     _binds = binds;
@@ -16,26 +17,25 @@ abstract class ChildModule {
     _binds = b;
   }
 
-  final List<String> paths = <String>[];
+  final List<String?> paths = <String?>[];
 
   final Map<Type, dynamic> _singletonBinds = {};
 
-  T getBind<T>(Map<String, dynamic> params, {List<Type> typesInRequest}) {
-    T bindValue;
+  T? getBind<T>(Map<String, dynamic>? params, {List<Type>? typesInRequest}) {
+    T? bindValue;
     var type = _getInjectType<T>();
     if (_singletonBinds.containsKey(type)) {
       bindValue = _singletonBinds[type];
       return bindValue;
     }
 
-    var bind = _binds.firstWhere((b) => b.inject is T Function(Inject),
-        orElse: () => null);
+    var bind = _binds!.firstWhereOrNull((b) => b.inject is T Function(Inject));
     if (bind == null) {
-      typesInRequest.remove(type);
+      typesInRequest!.remove(type);
       return null;
     }
 
-    if (typesInRequest.contains(type)) {
+    if (typesInRequest!.contains(type)) {
       throw ModularError('''
 Recursive calls detected. This can cause StackOverflow.
 Check the Binds of the $runtimeType module:
@@ -48,8 +48,7 @@ ${typesInRequest.join('\n')}
       typesInRequest.add(type);
     }
 
-    bindValue =
-        bind.inject(Inject(params: params, typesInRequest: typesInRequest));
+    bindValue = bind.inject(Inject(params: params, typesInRequest: typesInRequest));
     if (bind.singleton) {
       _singletonBinds[type] = bindValue;
     }
@@ -91,18 +90,23 @@ ${typesInRequest.join('\n')}
   }
 
   Type _getInjectType<B>() {
+    Type? foundKey;
     _singletonBinds.forEach((key, value) {
       if (value is B) {
-        return key;
+        foundKey = key;
       }
     });
+
+    if (foundKey != null) {
+      return foundKey!;
+    }
 
     return B;
   }
 
   /// Create a instance of all binds isn't lazy Loaded
   void instance() {
-    for (final bindElement in _binds) {
+    for (final bindElement in _binds!) {
       if (!bindElement.lazy) {
         var b = bindElement.inject(Inject());
         _singletonBinds[b.runtimeType] = b;

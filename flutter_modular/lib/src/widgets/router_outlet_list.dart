@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/src/interfaces/child_module.dart';
-import 'package:flutter_modular/src/widgets/router_outlet.dart';
 
+import '../interfaces/child_module.dart';
 import '../modular_base.dart';
+import 'router_outlet.dart';
 
 class RouterOutletList extends StatefulWidget {
   final List<ChildModule> modules;
   final ScrollPhysics physics;
   final RouterOutletListController controller;
   const RouterOutletList(
-      {Key key,
-      @required this.modules,
-      this.physics = const NeverScrollableScrollPhysics(),
-      @required this.controller})
+      {Key? key, required this.modules, this.physics = const NeverScrollableScrollPhysics(), required this.controller})
       : super(key: key);
   @override
   _RouterOutletListState createState() => _RouterOutletListState();
@@ -47,8 +44,8 @@ class _RouterOutletListState extends State<RouterOutletList> {
 
 class RouterOutletListController {
   final _pageController = PageController();
-  List<ChildModule> _modules;
-  ValueChanged<int> _listen;
+  late List<ChildModule> _modules;
+  ValueChanged<int>? _listen;
   void init(List<ChildModule> modules) {
     _modules = modules;
     Modular.updateCurrentModule(modules[0].runtimeType.toString());
@@ -59,7 +56,7 @@ class RouterOutletListController {
     Modular.updateCurrentModule(name);
     _pageController.jumpToPage(index);
     if (_listen != null) {
-      _listen(index);
+      _listen!(index);
     }
   }
 

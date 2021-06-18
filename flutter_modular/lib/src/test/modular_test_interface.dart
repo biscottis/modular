@@ -1,4 +1,6 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
+
 import '../../flutter_modular.dart';
 import '../../flutter_modular_test.dart';
 
@@ -10,11 +12,11 @@ abstract class IModularTest {
 
   ChildModule get module;
   List<Bind> get binds;
-  IModularTest get modulardependency;
+  IModularTest? get modulardependency;
 
   void load({
-    IModularTest changedependency,
-    List<Bind> changeBinds,
+    IModularTest? changedependency,
+    List<Bind>? changeBinds,
     bool isLoadDependency = true,
   }) {
     final dependency = getDendencies(
@@ -33,9 +35,9 @@ abstract class IModularTest {
   }
 
   @visibleForTesting
-  IModularTest getDendencies({
-    IModularTest changedependency,
-    @required bool isLoadDependency,
+  IModularTest? getDendencies({
+    IModularTest? changedependency,
+    required bool isLoadDependency,
   }) {
     changedependency ??= modulardependency;
 
@@ -46,24 +48,23 @@ abstract class IModularTest {
     return changedependency;
   }
 
-  bool _isDependencyRequired(IModularTest dependency, bool isLoadDependency) =>
+  bool _isDependencyRequired(IModularTest? dependency, bool isLoadDependency) =>
       dependency == null && isLoadDependency && isMainModule;
 
   @visibleForTesting
-  List<Bind> getBinds(List<Bind> changeBinds) {
+  List<Bind> getBinds(List<Bind>? changeBinds) {
     final mergedChangeBinds = mergeBinds(changeBinds, binds);
 
     return mergedChangeBinds;
   }
 
   @visibleForTesting
-  List<Bind> mergeBinds(List<Bind> changeBinds, List<Bind> defaultBinds) {
+  List<Bind> mergeBinds(List<Bind>? changeBinds, List<Bind>? defaultBinds) {
     final resultBinds = defaultBinds ?? [];
 
     for (var bind in (changeBinds ?? [])) {
-      var changedBind = resultBinds.firstWhere(
+      var changedBind = resultBinds.firstWhereOrNull(
         (item) => item.runtimeType == bind.runtimeType,
-        orElse: () => null,
       );
 
       if (changedBind != null) resultBinds.remove(changedBind);
@@ -82,9 +83,9 @@ abstract class IModularTest {
 
   @visibleForTesting
   void loadModularDependency({
-    @required bool isLoadDependency,
-    @required List<Bind> changeBinds,
-    @required IModularTest dependency,
+    required bool isLoadDependency,
+    required List<Bind>? changeBinds,
+    IModularTest? dependency,
   }) {
     if (isLoadDependency && dependency != null) {
       dependency.load(changeBinds: changeBinds);

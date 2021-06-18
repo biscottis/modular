@@ -4,19 +4,19 @@ import '../../flutter_modular.dart';
 import 'modular_navigator_interface.dart';
 
 class ModularNavigator implements IModularNavigator {
-  final NavigatorState navigator;
+  final NavigatorState? navigator;
 
   ModularNavigator(this.navigator);
 
   @override
   Future showDialog({
-    @deprecated Widget child,
-    @required WidgetBuilder builder,
+    @deprecated Widget? child,
+    WidgetBuilder? builder,
     bool barrierDismissible = true,
   }) {
-    return navigator.push(DialogRoute(
+    return navigator!.push(DialogRoute(
       pageBuilder: (buildContext, animation, secondaryAnimation) {
-        final pageChild = child ?? Builder(builder: builder);
+        final pageChild = child ?? Builder(builder: builder!);
         return SafeArea(
           child: Builder(builder: (context) {
             return pageChild;
@@ -48,76 +48,64 @@ class ModularNavigator implements IModularNavigator {
   }
 
   @override
-  bool canPop() => navigator.canPop();
+  bool canPop() => navigator!.canPop();
 
   @override
-  Future<bool> maybePop<T extends Object>([T result]) =>
-      navigator.maybePop(result);
+  Future<bool> maybePop<T extends Object?>([T? result]) => navigator!.maybePop(result);
 
   @override
-  void pop<T extends Object>([T result]) => navigator.pop(result);
+  void pop<T extends Object?>([T? result]) => navigator!.pop(result);
 
   @override
-  Future<T> popAndPushNamed<T extends Object, TO extends Object>(
-          String routeName,
-          {TO result,
-          Object arguments}) =>
-      navigator.popAndPushNamed(
+  Future<T?> popAndPushNamed<T extends Object?, TO extends Object?>(String routeName,
+          {TO? result, Object? arguments}) =>
+      navigator!.popAndPushNamed(
         routeName,
         result: result,
         arguments: arguments,
       );
 
   @override
-  void popUntil(bool Function(Route) predicate) =>
-      navigator.popUntil(predicate);
+  void popUntil(bool Function(Route) predicate) => navigator!.popUntil(predicate);
 
   @override
-  Future<T> push<T extends Object>(Route<T> route) => navigator.push(route);
+  Future<T?> push<T extends Object?>(Route<T> route) => navigator!.push(route);
 
   @override
-  Future<T> pushNamed<T extends Object>(String routeName, {Object arguments}) =>
-      navigator.pushNamed(routeName, arguments: arguments);
+  Future<T?> pushNamed<T extends Object?>(String routeName, {Object? arguments}) =>
+      navigator!.pushNamed(routeName, arguments: arguments);
 
   @override
-  Future<T> pushNamedAndRemoveUntil<T extends Object>(
-          String newRouteName, bool Function(Route) predicate,
-          {Object arguments}) =>
-      navigator.pushNamedAndRemoveUntil(newRouteName, predicate,
-          arguments: arguments);
+  Future<T?> pushNamedAndRemoveUntil<T extends Object?>(String newRouteName, bool Function(Route) predicate,
+          {Object? arguments}) =>
+      navigator!.pushNamedAndRemoveUntil(newRouteName, predicate, arguments: arguments);
 
   @override
-  Future<T> pushReplacementNamed<T extends Object, TO extends Object>(
-          String routeName,
-          {TO result,
-          Object arguments}) =>
-      navigator.pushReplacementNamed(routeName,
-          result: result, arguments: arguments);
+  Future<T?> pushReplacementNamed<T extends Object?, TO extends Object?>(String routeName,
+          {TO? result, Object? arguments}) =>
+      navigator!.pushReplacementNamed(routeName, result: result, arguments: arguments);
 
   @override
-  Future<T> pushReplacement<T extends Object, TO extends Object>(
-          Route<T> newRoute,
-          {TO result}) =>
-      navigator.pushReplacement(newRoute, result: result);
+  Future<T?> pushReplacement<T extends Object?, TO extends Object?>(Route<T> newRoute, {TO? result}) =>
+      navigator!.pushReplacement(newRoute, result: result);
 
   @override
-  String get modulePath => Modular.link.modulePath;
+  String? get modulePath => Modular.link!.modulePath;
 
   @override
-  String get path => Modular.link.path;
+  String? get path => Modular.link!.path;
 }
 
 class DialogRoute<T> extends PopupRoute<T> {
   DialogRoute({
-    @required RoutePageBuilder pageBuilder,
+    required RoutePageBuilder pageBuilder,
     bool barrierDismissible = true,
-    String barrierLabel,
+    String? barrierLabel,
     Color barrierColor = const Color(0x80000000),
     Duration transitionDuration = const Duration(milliseconds: 200),
-    RouteTransitionsBuilder transitionBuilder,
-    RouteSettings settings,
-  })  : assert(barrierDismissible != null),
-        _pageBuilder = pageBuilder,
+    RouteTransitionsBuilder? transitionBuilder,
+    RouteSettings? settings,
+  })  : _pageBuilder = pageBuilder,
         _barrierDismissible = barrierDismissible,
         _barrierLabel = barrierLabel,
         _barrierColor = barrierColor,
@@ -132,8 +120,8 @@ class DialogRoute<T> extends PopupRoute<T> {
   final bool _barrierDismissible;
 
   @override
-  String get barrierLabel => _barrierLabel;
-  final String _barrierLabel;
+  String? get barrierLabel => _barrierLabel;
+  final String? _barrierLabel;
 
   @override
   Color get barrierColor => _barrierColor;
@@ -143,11 +131,10 @@ class DialogRoute<T> extends PopupRoute<T> {
   Duration get transitionDuration => _transitionDuration;
   final Duration _transitionDuration;
 
-  final RouteTransitionsBuilder _transitionBuilder;
+  final RouteTransitionsBuilder? _transitionBuilder;
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     return Semantics(
       child: _pageBuilder(context, animation, secondaryAnimation),
       scopesRoute: true,
@@ -156,8 +143,8 @@ class DialogRoute<T> extends PopupRoute<T> {
   }
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(
+      BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
     if (_transitionBuilder == null) {
       return FadeTransition(
           opacity: CurvedAnimation(
@@ -166,6 +153,6 @@ class DialogRoute<T> extends PopupRoute<T> {
           ),
           child: child);
     } // Some default transition
-    return _transitionBuilder(context, animation, secondaryAnimation, child);
+    return _transitionBuilder!(context, animation, secondaryAnimation, child);
   }
 }

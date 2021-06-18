@@ -5,7 +5,7 @@ import '../../app_bloc.dart';
 
 class HomeBloc extends Disposable {
   String testingText = 'testing inject';
-  final AppBloc app;
+  final AppBloc? app;
 
   HomeBloc(this.app);
 

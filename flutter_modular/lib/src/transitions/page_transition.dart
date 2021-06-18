@@ -17,17 +17,17 @@ class PageTransition<T> extends PageRouteBuilder<T> {
   final Widget Function(BuildContext context) builder;
   final PageTransitionType type;
   final Curve curve;
-  final Alignment alignment;
+  final Alignment? alignment;
   final Duration duration;
 
   PageTransition({
-    Key key,
-    @required this.builder,
-    @required this.type,
+    Key? key,
+    required this.builder,
+    required this.type,
     this.curve = Curves.easeInOut,
     this.alignment,
     this.duration = const Duration(milliseconds: 600),
-    RouteSettings settings,
+    RouteSettings? settings,
   }) : super(
           pageBuilder: (context, animation, secondaryAnimation) {
             return builder(context);
@@ -41,7 +41,6 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                   opacity: animation,
                   child: child,
                 );
-                break;
               case PageTransitionType.rightToLeft:
                 return SlideTransition(
                   transformHitTests: false,
@@ -53,12 +52,10 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                     position: Tween<Offset>(
                       begin: Offset.zero,
                       end: Offset(-1.0, 0.0),
-                    ).animate(CurvedAnimation(
-                        parent: secondaryAnimation, curve: curve)),
+                    ).animate(CurvedAnimation(parent: secondaryAnimation, curve: curve)),
                     child: child,
                   ),
                 );
-                break;
               case PageTransitionType.leftToRight:
                 return SlideTransition(
                   transformHitTests: false,
@@ -70,12 +67,10 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                     position: Tween<Offset>(
                       begin: Offset.zero,
                       end: Offset(1.0, 0.0),
-                    ).animate(CurvedAnimation(
-                        parent: secondaryAnimation, curve: curve)),
+                    ).animate(CurvedAnimation(parent: secondaryAnimation, curve: curve)),
                     child: child,
                   ),
                 );
-                break;
               case PageTransitionType.upToDown:
                 return SlideTransition(
                   transformHitTests: false,
@@ -87,12 +82,10 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                     position: Tween<Offset>(
                       begin: Offset.zero,
                       end: Offset(0.0, 1.0),
-                    ).animate(CurvedAnimation(
-                        parent: secondaryAnimation, curve: curve)),
+                    ).animate(CurvedAnimation(parent: secondaryAnimation, curve: curve)),
                     child: child,
                   ),
                 );
-                break;
               case PageTransitionType.downToUp:
                 return SlideTransition(
                   transformHitTests: false,
@@ -104,15 +97,13 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                     position: Tween<Offset>(
                       begin: Offset.zero,
                       end: Offset(0.0, -1.0),
-                    ).animate(CurvedAnimation(
-                        parent: secondaryAnimation, curve: curve)),
+                    ).animate(CurvedAnimation(parent: secondaryAnimation, curve: curve)),
                     child: child,
                   ),
                 );
-                break;
               case PageTransitionType.scale:
                 return ScaleTransition(
-                  alignment: alignment,
+                  alignment: alignment!,
                   scale: CurvedAnimation(
                     parent: animation,
                     curve: Interval(
@@ -123,10 +114,9 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                   ),
                   child: child,
                 );
-                break;
               case PageTransitionType.rotate:
                 return RotationTransition(
-                  alignment: alignment,
+                  alignment: alignment!,
                   turns: CurvedAnimation(parent: animation, curve: curve),
                   child: ScaleTransition(
                     alignment: Alignment.center,
@@ -137,7 +127,6 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                     ),
                   ),
                 );
-                break;
               case PageTransitionType.size:
                 return Align(
                   alignment: Alignment.center,
@@ -149,7 +138,6 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                     child: child,
                   ),
                 );
-                break;
               case PageTransitionType.rightToLeftWithFade:
                 return SlideTransition(
                   position: Tween<Offset>(
@@ -162,13 +150,11 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                       position: Tween<Offset>(
                         begin: Offset.zero,
                         end: Offset(-1.0, 0.0),
-                      ).animate(CurvedAnimation(
-                          parent: secondaryAnimation, curve: curve)),
+                      ).animate(CurvedAnimation(parent: secondaryAnimation, curve: curve)),
                       child: child,
                     ),
                   ),
                 );
-                break;
               case PageTransitionType.leftToRightWithFade:
                 return SlideTransition(
                   position: Tween<Offset>(
@@ -181,13 +167,11 @@ class PageTransition<T> extends PageRouteBuilder<T> {
                       position: Tween<Offset>(
                         begin: Offset.zero,
                         end: Offset(1.0, 0.0),
-                      ).animate(CurvedAnimation(
-                          parent: secondaryAnimation, curve: curve)),
+                      ).animate(CurvedAnimation(parent: secondaryAnimation, curve: curve)),
                       child: child,
                     ),
                   ),
                 );
-                break;
               default:
                 return FadeTransition(
                   opacity: animation,

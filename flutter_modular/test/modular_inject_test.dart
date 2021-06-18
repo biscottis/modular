@@ -44,8 +44,8 @@ void main() {
     });
 
     test('Inject singleton does not create duplicated instances', () {
-      var firstState = Modular.get<AppState>().stateId;
-      var secondState = Modular.get<AppState>().stateId;
+      var firstState = Modular.get<AppState>()!.stateId;
+      var secondState = Modular.get<AppState>()!.stateId;
       expect(firstState, secondState);
     });
 

@@ -16,7 +16,7 @@ void main() {
     test('Test Get module ModularRouter', () {
       expect(Modular.selectRoute("home/"), isA<ModularRouter>());
       expect(Modular.selectRoute("/home/"), isA<ModularRouter>());
-      var router = Modular.selectRoute("/home");
+      var router = Modular.selectRoute("/home")!;
       expect(router.routerName, '/');
     });
 
@@ -37,14 +37,14 @@ void main() {
 
       expect(
           Modular.searchRoute(router, "/home/list/:id", "/home/list/1"), true);
-      expect(router.params['id'], "1");
+      expect(router.params!['id'], "1");
 
       expect(
           Modular.searchRoute(
               router, "/home/list/:id/item/:num", "/home/list/1/item/2"),
           true);
-      expect(router.params['id'], "1");
-      expect(router.params['num'], "2");
+      expect(router.params!['id'], "1");
+      expect(router.params!['num'], "2");
 
       expect(
           Modular.searchRoute(
@@ -60,7 +60,7 @@ void main() {
 
       expect(
           Modular.searchRoute(router, "/home/list/:id", "/home/list/01"), true);
-      expect(router.params['id'], "01");
+      expect(router.params!['id'], "01");
 
       expect(
           Modular.searchRoute(
@@ -83,12 +83,12 @@ void main() {
     });
 
     test('modulePath', () {
-      var router = Modular.selectRoute("/home/product/");
+      var router = Modular.selectRoute("/home/product/")!;
 
       expect(router, isA<ModularRouter>());
       expect(router.modulePath, "/home/product");
 
-      router = Modular.selectRoute("/home/product/1");
+      router = Modular.selectRoute("/home/product/1")!;
       expect(router, isA<ModularRouter>());
       expect(router.modulePath, "/home/product");
     });
@@ -119,7 +119,7 @@ void main() {
     });
 
     test('Get route correct', () {
-      final router = Modular.selectRoute("/prod/product");
+      final router = Modular.selectRoute("/prod/product")!;
       expect(router.routerName, "/product");
     });
   });
